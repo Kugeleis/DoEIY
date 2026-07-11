@@ -73,7 +73,7 @@ tasks:
     - task: up
     - task: test-container
 
-  check-quality:
+  check:
     desc: Run all code quality checks (lint, format, type-check, and tests)
     cmds:
     - task: lint
