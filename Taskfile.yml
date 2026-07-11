@@ -1,6 +1,36 @@
 version: '3'
 
 tasks:
+  setup:
+    desc: Set up Python virtual environment and dependencies using uv
+    cmds:
+    - uv sync
+
+  lint:
+    desc: Run ruff linter check
+    cmds:
+    - .venv/bin/ruff check app/ tests/
+
+  format:
+    desc: Run ruff formatter check
+    cmds:
+    - .venv/bin/ruff format {{.CLI_ARGS}} app/ tests/
+
+  type-check:
+    desc: Run mypy type checker
+    cmds:
+    - .venv/bin/mypy app/ tests/
+
+  test-py:
+    desc: Run Python unit tests with pytest
+    cmds:
+    - .venv/bin/pytest tests/
+
+  install-hooks:
+    desc: Install prek git hooks
+    cmds:
+    - prek install
+
   build:
     desc: Build the Docker image
     cmds:

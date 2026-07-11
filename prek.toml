@@ -9,15 +9,35 @@ hooks = [
 ]
 
 [[repos]]
-repo = "https://github.com/lorenzwalthert/precommit"
-rev = "v0.4.3"
-hooks = [
-    { id = "style-files" },
-    { id = "lintr" }
-]
-
-[[repos]]
 repo = "local"
+
+[[repos.hooks]]
+id = "ruff-check"
+name = "Ruff Linter"
+entry = ".venv/bin/ruff check app/ tests/"
+language = "system"
+types = ["python"]
+always_run = false
+pass_filenames = false
+
+[[repos.hooks]]
+id = "ruff-format"
+name = "Ruff Formatter"
+entry = ".venv/bin/ruff format --check app/ tests/"
+language = "system"
+types = ["python"]
+always_run = false
+pass_filenames = false
+
+[[repos.hooks]]
+id = "mypy"
+name = "MyPy Type Checker"
+entry = ".venv/bin/mypy app/ tests/"
+language = "system"
+types = ["python"]
+always_run = false
+pass_filenames = false
+
 [[repos.hooks]]
 id = "r-unit-tests"
 name = "Run R Unit Tests (Docker)"

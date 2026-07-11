@@ -1,0 +1,14 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+env/
+venv/
+ENV/
+
+# Linter and type checker cache
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
