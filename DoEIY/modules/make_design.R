@@ -8,13 +8,13 @@ make_design_ui <- function(id) {
       fluidRow(
         column(
           4,
-          selectizeInput(inputId = ns("type_of_design_select_id"), label = "Select a Design:", 
-                         choices = list("Screening Designs" = list("Plackett-Burman"), 
-                                        "Factorial" = list("Full Factorial", "Fractional Factorial"), 
-                                        "Response Surface Designs" = list("Box-Behnken", "Central Composite"), 
-                                        "Space Filling" = list("Latin Hypercube Sampling"), 
-                                        "Custom" = list("D-Optimal")), 
-                         selected = NULL, width = "100%", 
+          selectizeInput(inputId = ns("type_of_design_select_id"), label = "Select a Design:",
+                         choices = list("Screening Designs" = list("Plackett-Burman"),
+                                        "Factorial" = list("Full Factorial", "Fractional Factorial"),
+                                        "Response Surface Designs" = list("Box-Behnken", "Central Composite"),
+                                        "Space Filling" = list("Latin Hypercube Sampling"),
+                                        "Custom" = list("D-Optimal")),
+                         selected = NULL, width = "100%",
                          options = list(
                            placeholder = "Please select a suitable design",
                            onInitialize = I('function() { this.setValue(""); }')
@@ -34,17 +34,17 @@ make_design_ui <- function(id) {
 make_design_server <- function(id, design_reactive, factor_data_reactive, factor_types_reactive, d_optimal_model_components) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    
+
     # Internal reactives for make_design module
     column_widths_reactive <- reactiveVal(value = NULL)
     max_factors_reactive <- reactiveVal(value = NULL)
     min_factors_reactive <- reactiveVal(value = NULL)
     set_num_levels_reactive <- reactiveVal(value = NULL)
     factors_string_reactive <- reactiveVal(value = NULL)
-    
+
     DOD_min_runs_reactive <- reactiveVal(NULL)
     DOD_max_runs_reactive <- reactiveVal(NULL)
-    
+
     # Description texts based on selected design
     observeEvent(input$type_of_design_select_id, {
       selected_design <- input$type_of_design_select_id
@@ -57,11 +57,11 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         })
       }
     })
-    
+
     # Opens modal to gather factor details
     observeEvent(input$make_design_id, {
       selected_design <- input$type_of_design_select_id
-      
+
       if (selected_design == "") {
         showNotification(strong("A type of design must be selected."), duration = 15, closeButton = TRUE, type = "error")
       } else {
@@ -150,13 +150,13 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
           colnames(factor_df) <- c("Factor Names", "Factor Type", "Level Values")
           column_widths <- c(200, 200, 700)
         }
-        
+
         column_widths_reactive(column_widths)
         max_factors_reactive(max_factors)
         min_factors_reactive(min_factors)
         set_num_levels_reactive(set_num_levels)
         factors_string_reactive(factors_string)
-        
+
         showModal(modalDialog(
           title = h3(strong("Provide Factor Details"), style = "margin: 0px; padding: 0px; color: #0097a9; margin-bottom: 5px;"),
           fluidRow(
@@ -174,7 +174,7 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
             )
           )
         ))
-        
+
         output$Factor_details_table_id <- renderRHandsontable({
           rhandsontable(factor_df, selectCallback = TRUE, width = 1150, height = 250) %>%
             hot_cols(colWidths = column_widths) %>%
@@ -182,10 +182,10 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         })
       }
     })
-    
+
     # Close modal triggers
     observeEvent(input$close_modal_id, { removeModal() })
-    
+
     # Enforces min/max factors
     observe({
       req(input$Factor_details_table_id)
@@ -199,26 +199,26 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         }
       }
     })
-    
+
     # Confirm factor configuration details and navigate to blocking modal
     observeEvent(input$open_blocking_modal_id, {
       req(input$Factor_details_table_id)
       current_factor_data <- hot_to_r(input$Factor_details_table_id)
       factor_data_reactive(current_factor_data)
-      
+
       warning_msg <- c()
-      
+
       for (i in seq_len(dim(current_factor_data)[1])) {
         warning_msg_temp <- c()
         factor_name <- current_factor_data$`Factor Names`[i]
-        
+
         if (is.na(factor_name) || grepl("^\\s*$", factor_name) || factor_name == "") {
           warning_msg_temp <- c(warning_msg_temp, paste0("factor name is missing"))
         }
         if (is.na(factor_name) || grepl("^\\s*$", factor_name) || factor_name == "" || factor_name != make.names(factor_name)) {
           warning_msg_temp <- c(warning_msg_temp, "factor name cannot contain spaces or special characters")
         }
-        
+
         if ("Factor Type" %in% colnames(current_factor_data)) {
           factor_type <- current_factor_data$`Factor Type`[i]
           if (is.na(as.character(factor_type))) {
@@ -227,7 +227,7 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         } else {
           factor_type <- "Continuous"
         }
-        
+
         if ("Num Levels" %in% colnames(current_factor_data)) {
           num_levels <- current_factor_data$`Num Levels`[i]
           if (is.na(as.character(num_levels))) {
@@ -236,7 +236,7 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         } else {
           num_levels <- set_num_levels_reactive()
         }
-        
+
         level_values <- current_factor_data$`Level Values`[i]
         if (is.na(level_values) || grepl("^\\s*$", level_values) || level_values == "") {
           warning_msg_temp <- c(warning_msg_temp, paste0("level values are missing"))
@@ -253,18 +253,18 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
             }
           }
         }
-        
+
         if (length(warning_msg_temp) != 0) {
           warning_msg_temp <- paste0("Row ", i, ": ", paste0(warning_msg_temp, collapse = "; "), ".")
           warning_msg <- c(warning_msg, warning_msg_temp)
         }
       }
-      
+
       # If duplicate factor names exist, trigger a warning
       if (length(unique(current_factor_data$`Factor Names`)) != length(current_factor_data$`Factor Names`)) {
         warning_msg <- c(warning_msg, "Factor Names must be unique. Duplicate Factor Names are not allowed.")
       }
-      
+
       if (length(warning_msg) != 0) {
         output$warning_message_id <- renderUI({
           lapply(seq_len(length(warning_msg)), function(j) {
@@ -273,12 +273,12 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         })
       }
       req(length(warning_msg) == 0, cancelOutput = TRUE)
-      
+
       removeModal()
-      
+
       selected_design <- input$type_of_design_select_id
       n_factors <- dim(current_factor_data)[1]
-      
+
       # Determine design specific selections inside the Details modal
       showModal(modalDialog(
         title = h3(strong("Design Details"), style = "margin: 0px; padding: 0px; color: #0097a9; margin-bottom: 5px;"),
@@ -298,7 +298,7 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
           )
         )
       ))
-      
+
       output$summary_factors_table_id <- DT::renderDataTable(
         current_factor_data,
         escape = FALSE, selection = "none", server = FALSE,
@@ -310,7 +310,7 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         ),
         rownames = FALSE, filter = "none"
       )
-      
+
       if (selected_design == "Plackett-Burman") {
         design <- Plackett_Burman_Designs(n_factors)
         num_runs <- dim(design)[1]
@@ -339,10 +339,10 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         possible_powers <- min_power:max_power
         possible_runs <- sort(2^possible_powers)
         num_runs <- possible_runs[1]
-        
+
         min_runs_per_block_power <- min_power
         max_runs_per_block_power <- log2(num_runs / 2)
-        
+
         output$design_specific_selections_id <- renderUI({
           fluidRow(
             selectInput(inputId = ns("fractional_factorial_runs_select_id"), label = "Number of Experimental Runs:", choices = possible_runs, selected = num_runs, width = "100%"),
@@ -354,7 +354,7 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
       } else if (selected_design == "Box-Behnken") {
         design <- Box_Behnken_Designs(n_factors)
         num_runs <- dim(design)[1]
-        
+
         output$design_specific_selections_id <- renderUI({
           fluidRow(
             p(HTML(paste0(strong("Number of Runs: "), num_runs))),
@@ -380,13 +380,13 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
       } else if (selected_design == "D-Optimal") {
         factor_names <- current_factor_data$`Factor Names`
         factor_types <- as.character(current_factor_data$`Factor Type`)
-        
+
         # Populate DOD model components selection
         d_optimal_model_components(factor_names)
-        
+
         # Open model building dialog first
         removeModal()
-        
+
         showModal(modalDialog(
           title = h3(strong("Build Model"), style = "margin: 0px; padding: 0px; color: #0097a9; margin-bottom: 5px;"),
           fluidRow(
@@ -421,7 +421,7 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         ))
       }
     })
-    
+
     # Back action to reopen the factor spec table modal
     observeEvent(input$reopen_factors_modal_id, {
       removeModal()
@@ -448,38 +448,38 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
           hot_context_menu(allowRowEdit = TRUE, allowColEdit = FALSE)
       })
     })
-    
+
     # Dynamic blocks for Fractional Factorial
     observeEvent(input$fractional_factorial_runs_select_id, {
       n_factors <- dim(factor_data_reactive())[1]
       num_runs <- as.numeric(input$fractional_factorial_runs_select_id)
-      
+
       max_block_power <- log2(num_runs / 2)
       possible_block_runs <- 2^(0:max_block_power)
-      
+
       output$fractional_factorial_blocks_UI_id <- renderUI({
         selectInput(inputId = ns("fractional_factorial_blocks_select_id"), label = "Number of Blocks:", choices = possible_block_runs, selected = possible_block_runs[1], width = "100%")
       })
     })
-    
+
     observe({
       req(input$fractional_factorial_runs_select_id, input$fractional_factorial_blocks_select_id)
       n_factors <- dim(factor_data_reactive())[1]
       num_runs <- as.numeric(input$fractional_factorial_runs_select_id)
       num_blocks <- as.numeric(input$fractional_factorial_blocks_select_id)
-      
+
       design <- Fractional_Factorial_Designs(num_runs, n_factors, num_blocks)
       output$fractional_factorial_resolution_ui_id <- renderUI({
         p(HTML(paste0("This is a ", strong(design$Resolution), " design.")))
       })
     })
-    
+
     # D-Optimal Model specification observers
     observeEvent(input$DOD_add_interactions_id, {
       current_factor_data <- factor_data_reactive()
       factor_names <- as.character(current_factor_data$`Factor Names`)
       req(length(factor_names) > 1, cancelOutput = TRUE)
-      
+
       showModal(modalDialog(
         title = h3(strong("Add Interaction Term")),
         selectInput(inputId = ns("DOD_interaction_factor1_id"), label = "Factor 1", choices = factor_names),
@@ -491,12 +491,12 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         )
       ))
     })
-    
+
     observeEvent(input$DOD_interactions_add_btn_id, {
       req(input$DOD_interaction_factor1_id, input$DOD_interaction_factor2_id)
       f1 <- input$DOD_interaction_factor1_id
       f2 <- input$DOD_interaction_factor2_id
-      
+
       if (f1 == f2) {
         showNotification("Interaction terms must be between different factors.", type = "warning")
       } else {
@@ -509,16 +509,16 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         sorted_terms <- sorted_terms_df$term
         d_optimal_model_components(sorted_terms)
       }
-      
+
       # Reopen Build Model Modal
       removeModal()
       showBuildModelModal()
     })
-    
+
     observeEvent(input$DOD_add_quadratics_id, {
       current_factor_data <- factor_data_reactive()
       continuous_discrete_factors <- as.character(current_factor_data$`Factor Names`[current_factor_data$`Factor Type` %in% c("Continuous", "Discrete")])
-      
+
       if (length(continuous_discrete_factors) == 0) {
         showNotification("Quadratic terms are only supported for Continuous or Discrete factors.", type = "warning")
       } else {
@@ -533,12 +533,12 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         ))
       }
     })
-    
+
     observeEvent(input$DOD_quadratics_add_btn_id, {
       req(input$DOD_quadratic_factor_id)
       f <- input$DOD_quadratic_factor_id
       new_quadratic <- paste0(f, ":", f)
-      
+
       currently_selected_factors <- d_optimal_model_components()
       updated_selected_factors <- unique(c(currently_selected_factors, new_quadratic))
       term_types <- sapply(updated_selected_factors, classify_terms)
@@ -546,26 +546,26 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
       sorted_terms_df <- terms_df[order(terms_df$type, terms_df$term), ]
       sorted_terms <- sorted_terms_df$term
       d_optimal_model_components(sorted_terms)
-      
+
       removeModal()
       showBuildModelModal()
     })
-    
+
     observeEvent(input$DOD_remove_interactions_id, {
       req(input$selected_factors_DOD_id)
       terms_to_remove <- input$selected_factors_DOD_id
       currently_selected_factors <- d_optimal_model_components()
       updated_selected_factors <- setdiff(currently_selected_factors, terms_to_remove)
-      
+
       d_optimal_model_components(updated_selected_factors)
       updateSelectInput(session, inputId = "selected_factors_DOD_id", choices = updated_selected_factors)
     })
-    
+
     observeEvent(input$dod_model_select_back_btn_id, {
       removeModal()
       showBuildModelModal()
     })
-    
+
     showBuildModelModal <- function() {
       showModal(modalDialog(
         title = h3(strong("Build Model"), style = "margin: 0px; padding: 0px; color: #0097a9; margin-bottom: 5px;"),
@@ -594,12 +594,12 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         )
       ))
     }
-    
+
     # DOD parameter calculations & dynamic Runs Spec Modal
     observeEvent(input$open_dod_modal_id, {
       factor_data <- factor_data_reactive()
       components <- d_optimal_model_components()
-      
+
       factor_info <- lapply(seq_len(nrow(factor_data)), function(i) {
         fname <- factor_data$`Factor Names`[i]
         ftype <- factor_data$`Factor Type`[i]
@@ -607,9 +607,9 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         list(name = fname, type = ftype, levels = levels)
       })
       names(factor_info) <- factor_data$`Factor Names`
-      
+
       num_parameters <- sum(sapply(components, function(t) term_params(t, factor_info))) + 1
-      
+
       max_runs <- prod(sapply(names(factor_info), function(f) {
         info <- factor_info[[f]]
         if (info$type == "Continuous") {
@@ -619,16 +619,16 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
           length(info$levels)
         }
       }))
-      
+
       if (num_parameters > max_runs) {
         num_parameters <- max_runs
       }
-      
+
       DOD_min_runs_reactive(num_parameters)
       DOD_max_runs_reactive(max_runs)
-      
+
       removeModal()
-      
+
       showModal(modalDialog(
         title = h3(strong("Design Details"), style = "margin: 0px; padding: 0px; color: #0097a9; margin-bottom: 5px;"),
         fluidRow(
@@ -654,10 +654,10 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
           )
         )
       ))
-      
+
       output$DOD_min_runs_ui_id <- renderUI(p(strong(paste0("Min Runs: ", num_parameters))))
       output$DOD_max_runs_ui_id <- renderUI(p(strong(paste0("Max Runs: ", max_runs))))
-      
+
       output$summary_factors_table_id <- DT::renderDataTable(
         factor_data,
         escape = FALSE, selection = "none", server = FALSE,
@@ -670,21 +670,21 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         rownames = FALSE, filter = "none"
       )
     })
-    
+
     observeEvent(input$open_dod_modal_back_btn_id, {
       removeModal()
       showBuildModelModal()
     })
-    
+
     # Executes the design creation upon clicking "Create"
     observeEvent(input$create_design_id, {
       factor_data <- factor_data_reactive()
       selected_design <- input$type_of_design_select_id
       n_factors <- dim(factor_data)[1]
       factor_names <- factor_data$`Factor Names`
-      
+
       randomize <- input$randomize_checkbox_id
-      
+
       # Generates design based on design type
       if (selected_design == "Plackett-Burman") {
         design <- Plackett_Burman_Designs(n_factors)
@@ -696,9 +696,9 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
       } else if (selected_design == "Fractional Factorial") {
         num_runs <- as.numeric(input$fractional_factorial_runs_select_id)
         num_blocks <- as.numeric(input$fractional_factorial_blocks_select_id)
-        
+
         design <- Fractional_Factorial_Designs(num_runs, n_factors, num_blocks)$design
-        
+
         if (num_blocks > 1) {
           blocks <- design$blocks
           design <- subset(design, select = -blocks)
@@ -710,7 +710,7 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
       } else if (selected_design == "Box-Behnken") {
         num_blocks <- as.numeric(input$fractional_factorial_blocks_select_id)
         design <- Box_Behnken_Designs(n_factors)
-        
+
         if (num_blocks == 1) {
           design <- design[, colnames(design) != "Block", drop = FALSE]
           colnames(design) <- factor_names
@@ -731,25 +731,25 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         }
         req(val_res$valid, cancelOutput = TRUE)
         num_runs <- as.integer(round(input$LHS_runs_id))
-        
+
         design <- Latin_Hypercube_Designs(n_factors, num_runs)
         colnames(design) <- factor_names
       } else if (selected_design == "D-Optimal") {
         model_components <- d_optimal_model_components()
-        
+
         val_res <- validate_num_runs(input$DOD_num_runs_id, DOD_min_runs_reactive(), DOD_max_runs_reactive())
         if (!val_res$valid) {
           showNotification(val_res$message, duration = 20, closeButton = TRUE)
         }
         req(val_res$valid, cancelOutput = TRUE)
         num_runs <- as.integer(round(input$DOD_num_runs_id))
-        
+
         level_values <- as.character(factor_data$`Level Values`)
         level_values <- sapply(strsplit(level_values, ","), function(x) length(x))
         factor_types <- as.character(factor_data$`Factor Type`)
         design <- D_Optimal_Designs(level_values, model_components, factor_types, num_runs)
       }
-      
+
       # Rescales the Design coded values to the levels provided by the user
       if (selected_design == "Central Composite") {
         bounds <- factor_data$`Level Values`
@@ -765,7 +765,7 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         for (i in seq_len(ncol(design))) {
           factor_type <- factor_types[i]
           bound_str <- bounds[i]
-          
+
           if (factor_type == "Continuous") {
             lower_upper <- as.numeric(unlist(strsplit(bound_str, ",")))
             lower <- min(lower_upper)
@@ -790,20 +790,20 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
         }
       } else if (selected_design %in% c("Plackett-Burman", "Full Factorial", "Fractional Factorial", "Box-Behnken", "D-Optimal")) {
         bounds <- factor_data$`Level Values`
-        
+
         if ("Factor Type" %in% colnames(factor_data)) {
           factor_types <- as.character(factor_data$`Factor Type`)
         } else {
           factor_types <- rep("Continuous", n_factors)
         }
-        
+
         cols_to_scale <- setdiff(colnames(design), "Block")
-        
+
         for (col_name in cols_to_scale) {
           col_idx <- which(factor_names == col_name)
           factor_type <- factor_types[col_idx]
           bound_str <- bounds[col_idx]
-          
+
           if (factor_type == "Continuous") {
             lower_upper <- as.numeric(unlist(strsplit(bound_str, ",")))
             lower <- min(lower_upper)
@@ -824,34 +824,34 @@ make_design_server <- function(id, design_reactive, factor_data_reactive, factor
           }
         }
       }
-      
+
       # Adds blocks if present
       if ("Block" %in% colnames(design)) {
         block_col <- design$Block
         design <- subset(design, select = -c(Block))
         design$Block <- as.factor(block_col)
       }
-      
+
       # Save the factor types vector
       factor_types_vector <- setNames(as.character(factor_data$`Factor Type`), factor_names)
       if ("Block" %in% colnames(design)) {
         factor_types_vector <- c(factor_types_vector, Block = "Blocking")
       }
-      
+
       # Randomize order if requested
       if (randomize) {
         design <- design[sample(nrow(design)), , drop = FALSE]
       }
-      
+
       rownames(design) <- NULL
-      
+
       # Set shared reactive states
       design_reactive(design)
       factor_data_reactive(factor_data)
       factor_types_reactive(factor_types_vector)
-      
+
       removeModal()
-      
+
       # Switch tabs to the Enter Results tab
       updateTabItems(session, inputId = "tabs", selected = "Enter_edit_results_id")
       showNotification(strong("Design created successfully! Enter responses on the next tab."), duration = 10, type = "message")

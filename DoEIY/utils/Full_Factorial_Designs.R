@@ -7,20 +7,20 @@ Full_Factorial_Designs <- function(Factor_levels) {
   #   - Factor 2 has 3 levels
   #   - Factor 3 has 2 levels
   #   - Factor 4 has 4 levels
-  
+
   num_factors = length(Factor_levels)
-  
+
   # Initialize an empty list to store levels for each factor
   All_Levels = list()
-  
+
   # Loop through each factor to create a sequence of levels
   for (i in 1:num_factors) {
     num_levels = Factor_levels[i]
     All_Levels[[length(All_Levels)+1]] = seq(1, num_levels,1)
   }
-  
+
   # Generate the full factorial design by taking all combinations of levels
   Design = expand.grid(All_Levels)
- 
-  return(Design) 
+
+  return(Design)
 }

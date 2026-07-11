@@ -20,13 +20,13 @@ fix_component <- function(term) {
   # Standardizes pure polynomial terms into R I() syntax for formulas (e.g. X:X -> I(X^2))
   parts <- strsplit(term, ":")[[1]]
   uniq  <- unique(parts)
-  
+
   if (length(uniq) == 1 && length(parts) > 1) {
     fname <- uniq[1]
     deg   <- length(parts)
     return(paste0("I(", fname, "^", deg, ")"))
   }
-  
+
   term
 }
 
@@ -34,7 +34,7 @@ term_params <- function(term, factor_info) {
   # Calculates the number of parameters (degrees of freedom) added by a term
   factors <- unlist(strsplit(term, ":"))
   tab <- table(factors)
-  
+
   prod(sapply(names(tab), function(f) {
     info <- factor_info[[f]]
     if (is.null(info)) {
@@ -51,14 +51,14 @@ term_params <- function(term, factor_info) {
 validate_num_runs <- function(num_runs, min_runs, max_runs) {
   # Validates that the runs input is a valid positive integer within the min/max limits.
   # Returns a list: list(valid = TRUE/FALSE, message = character/NULL)
-  
+
   # Normalize character or factor inputs
   if (is.character(num_runs) || is.factor(num_runs)) {
     num_runs_num <- suppressWarnings(as.numeric(as.character(num_runs)))
   } else {
     num_runs_num <- num_runs
   }
-  
+
   # Check it's numeric
   if (!is.numeric(num_runs_num) || length(num_runs_num) != 1 || is.na(num_runs_num)) {
     return(list(valid = FALSE, message = "The 'Number of Experimental Runs' must be a single numeric integer."))
@@ -73,12 +73,12 @@ validate_num_runs <- function(num_runs, min_runs, max_runs) {
   if (num_runs_num <= 0) {
     return(list(valid = FALSE, message = "The 'Number of Experimental Runs' must be greater than zero."))
   }
-  
+
   # Check bounds
   if (!(num_runs_num >= min_runs && num_runs_num <= max_runs)) {
     return(list(valid = FALSE, message = "The 'Number of Experimental Runs' must be within the minumum and maximum number of runs provided."))
   }
-  
+
   return(list(valid = TRUE, message = NULL))
 }
 
@@ -216,4 +216,3 @@ update_factor_names <- function(new_columns, design_matrix) {
   # Return the updated column names
   new_columns
 }
-

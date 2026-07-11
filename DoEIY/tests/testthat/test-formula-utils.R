@@ -24,16 +24,16 @@ test_that("term_params computes parameters count based on factor type", {
     x2 = list(name = "x2", type = "Categorical", levels = c("A", "B", "C")),
     x3 = list(name = "x3", type = "Discrete", levels = c("1", "2", "3"))
   )
-  
+
   # Continuous main effect requires 1 param
   expect_equal(term_params("x1", factor_info), 1)
-  
+
   # Categorical (3 levels) requires k-1 = 2 params
   expect_equal(term_params("x2", factor_info), 2)
-  
+
   # Discrete (3 levels) is handled similarly to Categorical in term_params (levels-1) = 2 params
   expect_equal(term_params("x3", factor_info), 2)
-  
+
   # Interaction A:B requires 1 * 2 = 2 params
   expect_equal(term_params("x1:x2", factor_info), 2)
 })
@@ -43,30 +43,30 @@ test_that("validate_num_runs validates input runs properly", {
   res <- validate_num_runs(10, 5, 15)
   expect_true(res$valid)
   expect_null(res$message)
-  
+
   # Normalize character input
   res <- validate_num_runs("10", 5, 15)
   expect_true(res$valid)
-  
+
   # Out of bounds (too low)
   res <- validate_num_runs(4, 5, 15)
   expect_false(res$valid)
   expect_match(res$message, "must be within the minumum and maximum")
-  
+
   # Out of bounds (too high)
   res <- validate_num_runs(16, 5, 15)
   expect_false(res$valid)
-  
+
   # Decimals
   res <- validate_num_runs(10.5, 5, 15)
   expect_false(res$valid)
   expect_match(res$message, "must be an integer")
-  
+
   # Zero or negative
   res <- validate_num_runs(0, 0, 15)
   expect_false(res$valid)
   expect_match(res$message, "must be greater than zero")
-  
+
   # Non-numeric character
   res <- validate_num_runs("invalid", 5, 15)
   expect_false(res$valid)
@@ -85,19 +85,18 @@ test_that("update_factor_names cleans and formats ANOVA column names correctly",
     B = factor(c("Low", "Medium", "High", "Low")),
     C = c(10, 20, 30, 40)
   )
-  
+
   # A has exactly 2 unique values, so A1 -> A
   # B has 3 unique values, so B1 is NOT renamed to B
   # A1:B should update to A:B, then since A and B are original columns, A:B -> A*B
   # A1.B should update to A.B, then since A and B are original columns, A.B -> A*B
-  
+
   new_cols <- c("A1", "B1", "A1:B", "A1.B", "C")
   updated_cols <- update_factor_names(new_cols, design_matrix)
-  
+
   expect_equal(updated_cols[1], "A")
   expect_equal(updated_cols[2], "B1")
   expect_equal(updated_cols[3], "A*B")
   expect_equal(updated_cols[4], "A*B")
   expect_equal(updated_cols[5], "C")
 })
-

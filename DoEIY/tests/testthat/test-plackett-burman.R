@@ -5,12 +5,12 @@ test_that("Plackett_Burman_Designs creates valid designs for supported factors",
   expect_s3_class(design_7, "data.frame")
   expect_equal(ncol(design_7), 7)
   expect_equal(nrow(design_7), 8)
-  
+
   # For 8 factors, it should use the 12-run design (+ 1 row of all -1s = 12 rows)
   design_8 <- Plackett_Burman_Designs(8)
   expect_equal(ncol(design_8), 8)
   expect_equal(nrow(design_8), 12)
-  
+
   # For 12 factors, it uses 16 runs
   design_12 <- Plackett_Burman_Designs(12)
   expect_equal(ncol(design_12), 12)

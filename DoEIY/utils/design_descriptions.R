@@ -15,7 +15,7 @@ get_design_description <- function(design_type) {
     "Latin Hypercube Sampling" = "<p style='text-align: justify;'><strong>Latin Hypercube Sampling (LHS)</strong> is a space-filling design used to explore multi-dimensional parameter spaces. Unlike traditional factorial designs, LHS ensures that each factor is uniformly sampled across its range by dividing the range of each factor into equal intervals and selecting one point from each interval. This software provides improved LHS designs, optimizing the space-filling properties, suitable for computer experiments and simulations with any number of factors.</p>",
     "D-Optimal" = "<p style='text-align: justify;'><strong>D-Optimal Designs</strong> are computer-generated designs optimized based on a specified model. They choose a subset of runs from a candidate set of all possible combinations to minimize the variance of the estimated model coefficients (specifically maximizing the determinant of the information matrix). This approach is highly flexible, allowing for custom model specifications, constraints on run sizes, and the inclusion of continuous, discrete, and categorical factors with unequal levels.</p>"
   )
-  
+
   if (design_type %in% names(descs)) {
     return(descs[[design_type]])
   }

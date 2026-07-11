@@ -36,13 +36,13 @@ get_app_version <- function() {
   if (env_ver != "") {
     return(env_ver)
   }
-  
+
   for (path in c("version.txt", "../version.txt", "DoEIY/version.txt")) {
     if (file.exists(path)) {
       return(trimws(readLines(path, n = 1, warn = FALSE)))
     }
   }
-  
+
   return("1.0.1")
 }
 app_version <- get_app_version()
@@ -98,46 +98,45 @@ server <- function(input, output, session) {
   design_reactive <- reactiveVal(value = NULL)
   factor_types_reactive <- reactiveVal(value = NULL)
   factor_data_reactive <- reactiveVal(value = NULL)
-  
+
   factor_names_reactive <- reactiveVal(value = NULL)
   factor_blocks_reactive <- reactiveVal(value = NULL)
   responses_reactive <- reactiveVal(value = NULL)
-  
+
   design_matrix_reactive <- reactiveVal(value = NULL)
   model_formula_reactive <- reactiveVal(value = NULL)
   model_aov_reactive <- reactiveVal(value = NULL)
-  
+
   # Temporary storage for D-Optimal model build
   d_optimal_model_components <- reactiveVal(value = NULL)
-  
+
   # Call module servers
-  make_design_server("make_design", 
-                     design_reactive = design_reactive, 
-                     factor_data_reactive = factor_data_reactive, 
+  make_design_server("make_design",
+                     design_reactive = design_reactive,
+                     factor_data_reactive = factor_data_reactive,
                      factor_types_reactive = factor_types_reactive,
                      d_optimal_model_components = d_optimal_model_components)
-  
-  enter_results_server("enter_results", 
-                       design_reactive = design_reactive, 
-                       factor_types_reactive = factor_types_reactive, 
+
+  enter_results_server("enter_results",
+                       design_reactive = design_reactive,
+                       factor_types_reactive = factor_types_reactive,
                        factor_data_reactive = factor_data_reactive)
-  
-  analyze_design_server("analyze_design", 
-                        design_reactive = design_reactive, 
-                        factor_types_reactive = factor_types_reactive, 
-                        factor_names_reactive = factor_names_reactive, 
-                        factor_blocks_reactive = factor_blocks_reactive, 
+
+  analyze_design_server("analyze_design",
+                        design_reactive = design_reactive,
+                        factor_types_reactive = factor_types_reactive,
+                        factor_names_reactive = factor_names_reactive,
+                        factor_blocks_reactive = factor_blocks_reactive,
                         responses_reactive = responses_reactive,
-                        design_matrix_reactive = design_matrix_reactive, 
-                        model_formula_reactive = model_formula_reactive, 
+                        design_matrix_reactive = design_matrix_reactive,
+                        model_formula_reactive = model_formula_reactive,
                         model_aov_reactive = model_aov_reactive)
-  
-  model_explorer_server("model_explorer", 
-                        design_matrix_reactive = design_matrix_reactive, 
-                        factor_types_reactive = factor_types_reactive, 
-                        model_formula_reactive = model_formula_reactive, 
+
+  model_explorer_server("model_explorer",
+                        design_matrix_reactive = design_matrix_reactive,
+                        factor_types_reactive = factor_types_reactive,
+                        model_formula_reactive = model_formula_reactive,
                         model_aov_reactive = model_aov_reactive)
-  
+
   resources_server("resources")
 }
-

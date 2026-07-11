@@ -11,7 +11,7 @@ Welcome to DoEIY! This tool helps plan, conduct, and analyse Design of Experimen
 
 # DoEIY Overview
 
-![Overview of the DoEIY software workflow](figures/DoEIY_Overview.png)  
+![Overview of the DoEIY software workflow](figures/DoEIY_Overview.png)
 *Overview of the DoEIY software workflow. 1. Make a Design: users select a design type, define factors, and generate the experimental design. 2. Enter/Edit Results: experimental responses are entered directly into the editable design table, with options to save or load designs. 3. Analyze the Design: users select or create custom models; the model summary and statistics as well as design diagnostics are presented. 4. Explore the Design: interactive visualisation of factor–response relationships and optimisation and prediction tools allow users to identify factor settings that maximise, minimise, or achieve a target response.*
 
 The DoEIY software comprises 5 modules or tabs; these can found in the navigation bar on the left (see figure above):
@@ -30,7 +30,7 @@ This layout mirrors the natural progression of a DoE; first you create an experi
 
 The first step in the DoE process is to Make a Design. You begin by selecting a design from the dropdown menu:
 
-![Make a Design](figures/Make_a_Design__Choose_Design.png)  
+![Make a Design](figures/Make_a_Design__Choose_Design.png)
 *Make a Design. The Make a Design page in DoEIY, where you select a design type from the dropdown menu and enter the factor details to create a design.*
 
 There are a selection of design types and designs within them; you should choose what design type you need based on what you want to accomplish. The available designs are outlined in this section below.
@@ -49,7 +49,7 @@ Screening designs are used at the early stage of experimentation when you have m
 
 **Plackett-Burman Designs** are efficient screening tools for identifying which factors are likely to influence while keeping the number of experiments to a minimum. This makes these designs very effective for narrowing down a large set of possible factors to just those that actually affect the response. It is important to note that main effects may be mixed with higher-order interactions, meaning that what looks like a strong factor effect may in fact reflect an underlying interaction. Even so, these designs remain powerful tools for quickly focusing experimental effort on the most influential factors. This software offers Plackett-Burman designs for 4 to 23 factors.
 
-![Plackett-Burman Design](figures/Plackett_Burman.png)  
+![Plackett-Burman Design](figures/Plackett_Burman.png)
 *Make a Plackett-Burman Design. a. Factor details window for entering names, types, and two level values in a Plackett–Burman design. b. Design details window showing a summary of factors and runs, with the option to randomise the run order.*
 
 For a Plackett-Burman design, select *Plackett-Burman* from the dropdown menu. In the factor details window you must specify each factor with a name, its type (continuous, discrete, or categorical), and exactly two level values (e.g. `-1, 1`). Once created, the design details will summarise the factors and total number of runs. You may then choose whether to keep the default randomised run order or disable randomisation before finalising the design. Blocking is not available for this design.
@@ -60,7 +60,7 @@ Factorial designs provide a structured way to study how multiple factors influen
 
 **Full Factorial Designs** investigate every possible combination of factor levels, using two or more levels for each factor. This comprehensive approach enables the independent estimation of all main effects and higher-order interactions, providing a complete understanding of factor relationships. This makes these designs ideal when the number of factors is small or resources allow for a larger number or runs. DoEIY provides full factorial designs for up to 25 factors with a maximum of 10 levels per factor.
 
-![Full Factorial Design](figures/Full_Factorial.png)  
+![Full Factorial Design](figures/Full_Factorial.png)
 *Make a Full Factorial Design. a. Factor details window for specifying names, types, number of levels, and level values in a full factorial design. b. Design details window summarising the factors and the total number of runs, with the option to randomise the run order.*
 
 **Fractional Factorial Designs** are efficient alternatives to full factorial designs, utilising only a fraction of the total possible runs. They allow for the estimation of main effects and, depending on the design's resolution, certain interactions. The resolution of a fractional factorial design indicates which types of effects are aliased with which. This software provides 2-level fractional factorial designs with the following resolutions:
@@ -69,7 +69,7 @@ Factorial designs provide a structured way to study how multiple factors influen
 - Resolution IV – main effects are not aliased with other main effects or two-factor interactions; two-factor interactions may still be aliased with each other.
 - Resolution V – two-factor interactions are not aliased with main effects or other two-factor interactions, but may be aliased with three-factor interactions.
 
-![Fractional Factorial Design](figures/Fractional_Factorial.png)  
+![Fractional Factorial Design](figures/Fractional_Factorial.png)
 *Make a Fractional Factorial Design. a. Factor details window for entering names, types, and two level values in a fractional factorial design. b. Design diagnostics window with dropdown menus to select the total number of runs and the number of blocks, plus the option to randomise.*
 
 Resolution III designs are generally suitable for screening studies, when the primary goal is simply to flag potentially important factors. Resolution IV is often considered the minimum acceptable for most studies, as it provides clearer estimation of main effects. Resolution V is preferred when interactions are expected to be important and you want confidence in interpreting both main and two-factor effects. Increasing the resolution provides clearer interpretation, but at the cost of a higher experimental workload. Selecting the appropriate resolution depends on balancing the level of detail you need against the number of runs that can be executed.
@@ -82,7 +82,7 @@ Response surface designs are used when you need to explore non-linearity in the 
 
 **Box-Behnken Designs** are response surface designs that use 3 levels for each factor to efficiently estimate quadratic models. They allow independent estimation of main effects, two-factor interactions, and quadratic effects, without requiring the full number of runs of a three-level factorial. In this software, Box–Behnken designs are available for experiments with 3 to 7 factors.
 
-![Box-Behnken Design](figures/Box_Behnken.png)  
+![Box-Behnken Design](figures/Box_Behnken.png)
 *Make a Box-Behnken Design. a. Factor details window for entering names and three equally spaced levels for each continuous factor in a Box–Behnken design. b. Design diagnostics window where blocking can be selected for 4- or 5-factor designs, along with the option to randomise the run order.*
 
 **Central Composite Designs** are response surface designs used to fit quadratic models by employing 3 levels for each factor. They are composed of three parts:
@@ -97,7 +97,7 @@ The positioning of the axial points depends on whether the design is Circumscrib
 - Inscribed – the axial points lie within the provided upper and lower bounds and the factorial design is "shrunk" to fit within the range to preserve rotatability.
 - Face Centred – the axial points lie on the centre of each face of the factorial design. These axial points do not exceed the bounds of the factorial design. This option is not rotatable.
 
-![Central Composite Design](figures/Central_Composite.png)  
+![Central Composite Design](figures/Central_Composite.png)
 *Make a Central-Composite Design. a. Factor details window for specifying names and upper/lower level values for each continuous factor in a Central Composite design. b. Design details window where the design type (circumscribed, inscribed, or face-centred) is selected, with the option to randomise.*
 
 For a Central Composite design, select *Central Composite* from the dropdown menu. In the factor details window you must provide a name and the upper and lower level values for each factor. All factors must be continuous. The software will then calculate the additional levels automatically, based on the type of central composite design selected. In the design details pane, a dropdown menu allows you to choose between the Circumscribed, Inscribed, or Face-Centred variants. Blocking is not available for this design. As with other designs, you may also choose whether to keep the default randomised run order or disable randomisation before finalising the design.
@@ -106,7 +106,7 @@ For a Central Composite design, select *Central Composite* from the dropdown men
 
 Space-filling designs are used to explore a wide region of the design space efficiently. The goal is to maximise coverage while ensuring the experimental runs are spread as evenly as possible across the design space. They can be particularly useful when little is known about the system or when machine learning models will be applied. In this software, space-filling designs are implemented through Latin Hypercube sampling.
 
-![Latin Hypercube Design](figures/Latin_Hypercube.png)  
+![Latin Hypercube Design](figures/Latin_Hypercube.png)
 *Make a Latin Hypercube Design. a. Factor details window for entering names, types, and level values in a Latin Hypercube design. b. Design details window for selecting the number of runs, with the option to randomise.*
 
 **Latin Hypercube Sampling** is a statistical method for creating designs that efficiently explore the design space with a set number of runs. Each factor is sampled uniformly across its range, ensuring all portions of the design space are represented. This allows for broad and balanced coverage of the design space with fewer runs than classical designs. This makes Latin Hypercube designs very useful for exploring complex, high-dimensional systems when other designs would require an infeasible number of runs. Note: Because this method incorporates an element of randomness, two designs generated from the same inputs may differ; however, each design is still optimised for balance and coverage.
@@ -117,14 +117,14 @@ Custom designs are flexible designs that tailor the experimental runs to the spe
 
 **D-Optimal Designs** are built around a specified model that includes the effects and interactions you wish to estimate. You specify which model terms to include (main effects, interactions, quadratic terms, or custom combinations), and the D-Optimal algorithm will generate a set of runs optimised to estimate those terms as efficiently as possible. This software supports D-Optimal designs for any number of factors, levels, and factor types, including continuous, discrete, categorical, and blocking factors.
 
-![D-Optimal Design](figures/D_Optimal.png)  
+![D-Optimal Design](figures/D_Optimal.png)
 *Make a D-Optimal Design. a. Factor details window for entering names, types, and level values in a D-optimal design. b. Design details window for selecting model components (e.g. main effects, two-factor interactions, quadratics) and any custom interactions.*
 
 # Entering and Editing Results
 
 Once you have finalised your experimental design, the **Enter/Edit Results** tab will display the design matrix in an editable table:
 
-![Enter/Edit Results](figures/Enter_Edit_Results.png)  
+![Enter/Edit Results](figures/Enter_Edit_Results.png)
 *Enter/Edit Results. The Enter/Edit Results tab, where you can enter responses, save or load designs, and edit rows or columns in the design matrix.*
 
 You can type your measured responses directly into the table. For example, if your response is yield, particle size, or another experimental measurement, simply enter the values in the appropriate response column next to the corresponding run.
@@ -156,7 +156,7 @@ This editing functionality allows you to flexibly manage your dataset as you col
 
 Once responses have been entered, you can move to the **Analyze the Design** tab. This tab contains three subtabs: **Create Model**, **ANOVA**, and **Design Diagnostics**.
 
-![Analyze the Design](figures/Analyze_Design.png)  
+![Analyze the Design](figures/Analyze_Design.png)
 *Analyze the Design. The Analyze the Design tab, which contains the Create Model, ANOVA, and Design Diagnostics subtabs.*
 
 ## Create Model
@@ -173,7 +173,7 @@ Next, select the response variable you wish to model and click **Analyze**. This
 
 *How the model is fitted:* Models are fitted by ordinary least squares regression using R's `aov()` function. ANOVA is then applied to partition variance and test the significance of the terms.
 
-![Model Specification](figures/Model_Specification.png)  
+![Model Specification](figures/Model_Specification.png)
 *Model Specification. The Create Model subtab, showing the default-model dropdown, model term lists, and controls for adding, removing, or crossing terms.*
 
 ## ANOVA
@@ -185,7 +185,7 @@ The **ANOVA** subtab reports model fit and term significance. Outputs include:
 - An **ANOVA table** listing degrees of freedom, sum of squares, mean square, $F$-statistic, and $p$-values.
 - An **Estimates table** showing coefficients, standard errors, $t$-statistics, and $p$-values.
 
-![ANOVA Results](figures/ANOVA_Results.png)  
+![ANOVA Results](figures/ANOVA_Results.png)
 *ANOVA Results. The ANOVA subtab, showing the parity plot, model fit metrics, and excerpts from the ANOVA and Estimates tables.*
 
 ## Design Diagnostics
@@ -195,7 +195,7 @@ The **Design Diagnostics** subtab provides tools to evaluate the quality of the 
 - **Alias structure:** identifies terms that cannot be distinguished due to the design.
 - **Correlation heatmap:** visualises collinearity among model terms.
 
-![Diagnostics](figures/Diagnostics.png)  
+![Diagnostics](figures/Diagnostics.png)
 *Diagnostics. The Design Diagnostics subtab, showing an alias report and a correlation heatmap.*
 
 # Model Explorer
@@ -206,7 +206,7 @@ The **Model Explorer** tab allows you to interact with your fitted model. It con
 
 The **Visualizer** subtab displays plots of the response against each factor. Sliders allow you to adjust factor values interactively.
 
-![Factor-Response Visualizer](figures/Visualizer.png)  
+![Factor-Response Visualizer](figures/Visualizer.png)
 *Factor-Response Visualizer. The Visualizer subtab, showing factor-response plots with sliders and a predicted response read-out.*
 
 ## Interact (Optimisation and Targeting)
@@ -218,7 +218,7 @@ The **Interact** subtab lets you optimise or target a response value.
 - Optionally provide starting values for the factors.
 - Click **Run** to obtain factor settings and the predicted response.
 
-![Interact Optimisation](figures/Interact.png)  
+![Interact Optimisation](figures/Interact.png)
 *Interact Optimisation. The Interact subtab, showing goal selection, optional starting values, and the returned solution.*
 
 # DoE Glossary
