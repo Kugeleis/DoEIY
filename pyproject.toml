@@ -72,5 +72,5 @@ replace = "{new_version}"
 
 [[tool.bumpversion.files]]
 filename = "uv.toml"
-search = 'version = "{current_version}"'
-replace = 'version = "{new_version}"'
+search = '# version = "{current_version}"'
+replace = '# version = "{new_version}"'
