@@ -37,11 +37,11 @@ There are a selection of design types and designs within them; you should choose
 
 Once you have chosen your design and click **Make Design**, a pop-up window will appear (see figure below), where you will enter the factor details. The necessary factor details will depend on the chosen design. Factors can be added or removed by right-clicking on the table and selecting the relevant option. After clicking **Next**, you will be taken to the design details. If there are issues with the factor entries, the software will highlight the problems before allowing you to proceed. Once valid factor details are provided, the design details page will appear, summarising the factors, the number of runs, and the blocking options if available. At this stage, you may also choose whether to randomise the run order (the default is randomised). When you are satisfied, click **Create** and the design will be generated. The completed design will then be available under the **Enter/Edit Data** tab.
 
-**Note:** In v1.0.0 of DoEIY, factor names may only contain letters, numbers, and underscores, i.e. syntactically valid names in R. As such, a valid factor name must:
+**Note:** In DoEIY, factor names may only contain letters, numbers, and underscores, i.e., syntactically valid variable names in Python/Patsy. As such, a valid factor name must:
 
-- contain only letters, digits, underscores, and periods,
-- begin with a letter or a period (but not a period followed by a digit),
-- not be a reserved word (like `if`, `else`, or `function`).
+- contain only letters, digits, and underscores,
+- begin with a letter or an underscore,
+- not be a Python reserved keyword (like `if`, `else`, `class`, or `import`).
 
 ## Screening Designs
 
@@ -242,6 +242,25 @@ Before using DoEIY, it is helpful to review some core DoE terminology:
 
 DoEIY is Docker-ready and can be deployed locally using Docker / Docker Compose or to cloud platforms such as Red Hat OpenShift.
 
+## Local Development Setup
+
+To run the application locally in development:
+
+1. **Install uv**: Ensure [uv](https://github.com/astral-sh/uv) is installed.
+2. **Install dependencies and setup virtualenv**:
+   ```bash
+   task setup
+   ```
+3. **Run local quality checks (linting, formatting, typechecking, pytest)**:
+   ```bash
+   task check-quality
+   ```
+4. **Run the FastAPI development server**:
+   ```bash
+   .venv/bin/uvicorn app.main:app --reload
+   ```
+   The backend API is now running and accessible at `http://127.0.0.1:8000`.
+
 ## Local Deployment (Docker & Docker Compose)
 
 The easiest way to run the application locally is using the provided Docker configuration.
@@ -261,7 +280,7 @@ Using the [Taskfile.yml](file:///home/richard/coding/DoEIY/Taskfile.yml) command
    ```bash
    task up
    ```
-   The application will start in the background and is accessible at `http://localhost:3838`.
+   The application will start in the background and is accessible at `http://localhost:8000`.
 3. **View logs:**
    ```bash
    task logs
@@ -292,21 +311,11 @@ OpenShift's Developer Console allows you to deploy the application directly from
 3. Enter your Git Repository URL.
 4. (Optional) Under **Show advanced Git options**, specify the branch name (e.g., `main`).
 5. OpenShift will automatically detect the [Dockerfile](file:///home/richard/coding/DoEIY/Dockerfile) at the root of the project and set the build option to **Dockerfile**.
-6. Under **Target Port**, verify that it is set to `3838`.
+6. Under **Target Port**, verify that it is set to `8000`.
 7. Click **Create**.
 
-> [!IMPORTANT]
-> **Build Resources:** Compiling 16+ R packages (like `ggplot2`, `plotly`, `AlgDesign`) from source takes significant memory and CPU. If your build fails or runs out of memory, increase the resources in the generated `BuildConfig`:
-> ```yaml
-> spec:
->   resources:
->     limits:
->       memory: 4Gi
->       cpu: "2"
->     requests:
->       memory: 2Gi
->       cpu: "1"
-> ```
+> [!NOTE]
+> **Fast Builds**: Unlike the previous R version, Python dependencies are precompiled wheels and fast pure-Python binaries installed instantly using `uv`. Builds complete in seconds without requiring heavy compiler CPU or memory allocations.
 
 ### Strategy 2: Deploy Built Container Image (GHCR)
 
@@ -315,7 +324,7 @@ You can also deploy the pre-built Docker image produced by the GitHub Actions CI
 1. Switch to the **Developer** perspective, click **+Add**, and select **Container Image**.
 2. Select **Image name from external registry** and enter the GHCR image path (substituting your GitHub username/org):
    `ghcr.io/<your-github-username>/doeiy:latest`
-3. Verify the **Target Port** is set to `3838`.
+3. Verify the **Target Port** is set to `8000`.
 4. Click **Create**.
 
 [^1]: Corresponding author: <s.guldin@ucl.ac.uk>
