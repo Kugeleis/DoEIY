@@ -55,6 +55,10 @@ commit = true
 tag = true
 tag_name = "v{new_version}"
 commit_args = "--no-verify"
+allow_shell_hooks = true
+pre_commit_hooks = [
+    "git add uv.toml"
+]
 
 [[tool.bumpversion.files]]
 filename = "pyproject.toml"
