@@ -1,6 +1,6 @@
 [project]
 name = "doeiy"
-version = "0.1.0"
+version = "1.0.2"
 description = "Add your description here"
 authors = [
     { name = "Kugeleis", email = "9948777+Kugeleis@users.noreply.github.com" }
@@ -21,6 +21,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "bump-my-version>=1.4.1",
     "httpx>=0.28.1",
     "mypy>=2.2.0",
     "pytest>=9.1.1",
@@ -47,3 +48,25 @@ strict = true
 ignore_missing_imports = true
 warn_unused_configs = true
 disallow_untyped_defs = true
+
+[tool.bumpversion]
+current_version = "1.0.2"
+commit = true
+tag = true
+tag_name = "v{new_version}"
+commit_args = "--no-verify"
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "version.txt"
+search = "{current_version}"
+replace = "{new_version}"
+
+[[tool.bumpversion.files]]
+filename = "uv.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'

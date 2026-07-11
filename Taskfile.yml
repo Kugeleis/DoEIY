@@ -82,16 +82,16 @@ tasks:
     - task: test
 
   b-M:
-    desc: Bump Major version, commit, and tag (e.g., 1.0.1 -> 2.0.0)
+    desc: Bump Major version, commit, and tag (e.g., 1.0.2 -> 2.0.0)
     cmds:
-    - ./scripts/bump_version.sh major
+    - .venv/bin/bump-my-version bump major
 
   b-m:
-    desc: Bump minor version, commit, and tag (e.g., 1.0.1 -> 1.1.0)
+    desc: Bump minor version, commit, and tag (e.g., 1.0.2 -> 1.1.0)
     cmds:
-    - ./scripts/bump_version.sh minor
+    - .venv/bin/bump-my-version bump minor
 
   b-p:
-    desc: Bump patch version, commit, and tag (e.g., 1.0.1 -> 1.0.2)
+    desc: Bump patch version, commit, and tag (e.g., 1.0.2 -> 1.0.3)
     cmds:
-    - ./scripts/bump_version.sh patch
+    - .venv/bin/bump-my-version bump patch
