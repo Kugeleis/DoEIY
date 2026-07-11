@@ -25,6 +25,7 @@ dev = [
     "httpx>=0.28.1",
     "mypy>=2.2.0",
     "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
     "ruff>=0.15.21",
 ]
 
@@ -48,6 +49,10 @@ strict = true
 ignore_missing_imports = true
 warn_unused_configs = true
 disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+addopts = "--cov=app --cov-report=term-missing"
+testpaths = ["tests"]
 
 [tool.bumpversion]
 current_version = "1.0.2"
