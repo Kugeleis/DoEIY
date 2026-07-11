@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 from app.engine.design_generators import (
+    federov_exchange,
     generate_box_behnken,
     generate_central_composite,
     generate_d_optimal,
@@ -11,6 +12,8 @@ from app.engine.design_generators import (
     generate_full_factorial,
     generate_latin_hypercube,
     generate_plackett_burman,
+    get_resolution,
+    is_aliased,
 )
 
 
@@ -104,3 +107,35 @@ def test_d_optimal_augment() -> None:
     # Check that existing runs are preserved
     assert np.allclose(df.iloc[:3]["Var1"], existing["Var1"])
     assert np.allclose(df.iloc[:3]["Var2"], existing["Var2"])
+
+
+def test_design_generators_edge_cases() -> None:
+
+    # 1. is_aliased constant series (zero variance)
+    s1 = pd.Series([1, 1, 1])
+    s2 = pd.Series([1, 2, 3])
+    assert is_aliased(s1, s2) is False
+
+    # 2. get_resolution for high order combinations
+    df_alias = pd.DataFrame({"A": [-1, 1, -1, 1], "B": [-1, -1, 1, 1], "C": [1, -1, -1, 1]})
+    # C is A*B interaction (C = A*B)
+    assert get_resolution(df_alias.values) == "Resolution III"
+
+    # 3. generate_box_behnken with 5 factors (blocks & no blocks)
+    bb5 = generate_box_behnken(5)
+    assert isinstance(bb5, pd.DataFrame)
+    assert bb5.shape[0] > 0
+
+    # 4. generate_central_composite variants
+    cc_inscribed = generate_central_composite(3, "Inscribed")
+    assert isinstance(cc_inscribed, pd.DataFrame)
+    assert cc_inscribed.shape[0] > 0
+
+    cc_circumscribed = generate_central_composite(3, "Circumscribed")
+    assert isinstance(cc_circumscribed, pd.DataFrame)
+    assert cc_circumscribed.shape[0] > 0
+
+    # 5. Federov exchange with singular candidate matrix
+    X_cand = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])  # singular candidate matrix
+    res_fed = federov_exchange(X_cand, n_runs=2, max_iter=2)
+    assert len(res_fed) == 2

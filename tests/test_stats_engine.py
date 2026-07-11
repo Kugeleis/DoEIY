@@ -110,3 +110,21 @@ def test_fit_regression_model() -> None:
     assert res["r_squared"] > 0.8
     assert len(res["fitted_values"]) == 6
     assert len(res["residuals"]) == 6
+
+
+def test_stats_engine_helpers() -> None:
+    from app.engine.stats_engine import classify_terms, factor_degree, term_params
+
+    # Cover lines 14-15
+    assert classify_terms("") == 0
+    assert classify_terms("   ") == 0
+
+    # Cover line 29
+    assert factor_degree("A", ["A:A:A"]) == 3
+
+    # Cover line 57
+    assert term_params("", {}) == 0
+
+    # Cover line 73
+    # "B" is not in factor_info, so fallback to continuous (params *= 1)
+    assert term_params("B", {}) == 1

@@ -161,6 +161,8 @@ def api_generate_design(req: DesignRequest) -> dict[str, Any]:
             df = generate_d_optimal(levels_count, components, factor_types, req.num_runs)
         else:
             raise HTTPException(status_code=400, detail="Unknown design type.")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
@@ -279,6 +281,10 @@ def api_optimize_response(req: OptimizeRequest) -> dict[str, Any]:
     df = pd.DataFrame(req.data)
     try:
         fit = fit_regression_model(df, req.formula)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Formula fitting failed: {str(e)}") from e
+
+    try:
         model = fit["model_object"]
         res = optimize_model(model, df, req.factor_types, req.opt_type, req.target_response)
     except Exception as e:
