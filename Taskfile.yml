@@ -21,8 +21,8 @@ tasks:
     cmds:
     - .venv/bin/mypy app/ tests/
 
-  test-py:
-    desc: Run Python unit tests with pytest
+  test:
+    desc: Run Python unit and integration tests locally with pytest
     cmds:
     - .venv/bin/pytest tests/
 
@@ -61,21 +61,24 @@ tasks:
     cmds:
     - docker compose restart
 
-  test:
-    desc: Run R unit tests inside the Docker container
+  test-container:
+    desc: Run Python unit tests inside the Docker container
     cmds:
-    - docker compose exec -T doeiy Rscript tests/run_tests.R
+    - docker compose exec -T doeiy .venv/bin/pytest tests/
 
   test-clean:
-    desc: Rebuild the Docker image without cache and run tests
+    desc: Rebuild the Docker image without cache and run tests in container
     cmds:
     - task: build-clean
     - task: up
-    - task: test
+    - task: test-container
 
   check-quality:
-    desc: Show summary of codebase quality and testing coverage
+    desc: Run all code quality checks (lint, format, type-check, and tests)
     cmds:
+    - task: lint
+    - task: format
+    - task: type-check
     - task: test
 
   b-M:

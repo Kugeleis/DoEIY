@@ -5,9 +5,9 @@ services:
       dockerfile: Dockerfile
     container_name: doeiy-app
     ports:
-      - "3838:3838"
+      - "8000:8000"
     volumes:
-      - ./DoEIY:/app
+      - ./app:/app/app
     environment:
-      - PORT=3838
+      - PORT=8000
     restart: unless-stopped
