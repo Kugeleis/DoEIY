@@ -9,22 +9,22 @@ tasks:
   lint:
     desc: Run ruff linter check
     cmds:
-    - .venv/bin/ruff check app/ tests/
+    - uv run ruff check app/ tests/
 
   format:
     desc: Run ruff formatter check
     cmds:
-    - .venv/bin/ruff format {{.CLI_ARGS}} app/ tests/
+    - uv run ruff format {{.CLI_ARGS}} app/ tests/
 
   type-check:
     desc: Run mypy type checker
     cmds:
-    - .venv/bin/mypy app/ tests/
+    - uv run mypy app/ tests/
 
   test:
     desc: Run Python unit and integration tests locally with pytest
     cmds:
-    - .venv/bin/pytest tests/
+    - uv run pytest tests/
 
   install-hooks:
     desc: Install prek git hooks
@@ -84,14 +84,14 @@ tasks:
   b-M:
     desc: Bump Major version, commit, and tag (e.g., 1.0.2 -> 2.0.0)
     cmds:
-    - .venv/bin/bump-my-version bump major
+    - uv run bump-my-version bump major
 
   b-m:
     desc: Bump minor version, commit, and tag (e.g., 1.0.2 -> 1.1.0)
     cmds:
-    - .venv/bin/bump-my-version bump minor
+    - uv run bump-my-version bump minor
 
   b-p:
     desc: Bump patch version, commit, and tag (e.g., 1.0.2 -> 1.0.3)
     cmds:
-    - .venv/bin/bump-my-version bump patch
+    - uv run bump-my-version bump patch
