@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DoEIY - Design of Experiments Web Platform</title>
+
+  <!-- Blades CSS CDN (drop-in Pico CSS successor) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@anyblades/blades@2/css/blades.min.css" />
+
+  <!-- Handsontable CSS CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" />
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/styles.css" />
+
+  <!-- Plotly.js CDN -->
+  <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+
+  <!-- Handsontable.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+</head>
+<body>
+
+  <div class="app-layout">
+
+    <!-- Sidebar Navigation -->
+    <nav class="app-sidebar">
+      <div class="brand" style="flex-direction: column; align-items: flex-start; gap: 0.2rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; width: 100%;">
+          <!-- SVG beaker logo -->
+          <svg class="brand-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4.5 3h15" />
+            <path d="M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3" />
+            <path d="M6 14h12" />
+          </svg>
+          <span class="brand-title">DoEIY</span>
+        </div>
+        <span id="app-version" style="font-size: 0.75rem; color: var(--text-muted); margin-left: 3rem;">-</span>
+      </div>
+
+      <ul class="nav-menu">
+        <li class="nav-item active" data-tab="make-design">
+          <a href="#make-design">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            <span>Make a Design</span>
+          </a>
+        </li>
+        <li class="nav-item" data-tab="enter-results">
+          <a href="#enter-results">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18"/>
+            </svg>
+            <span>Enter/Edit Results</span>
+          </a>
+        </li>
+        <li class="nav-item" data-tab="analyze-design">
+          <a href="#analyze-design">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+            <span>Analyze the Design</span>
+          </a>
+        </li>
+        <li class="nav-item" data-tab="model-explorer">
+          <a href="#model-explorer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" y1="21" x2="4" y2="14" />
+              <line x1="4" y1="10" x2="4" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12" y2="3" />
+              <line x1="20" y1="21" x2="20" y2="16" />
+              <line x1="20" y1="12" x2="20" y2="3" />
+              <line x1="1" y1="14" x2="7" y2="14" />
+              <line x1="9" y1="8" x2="15" y2="8" />
+              <line x1="17" y1="16" x2="23" y2="16" />
+            </svg>
+            <span>Model Explorer</span>
+          </a>
+        </li>
+        <li class="nav-item" data-tab="resources">
+          <a href="#resources">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+            <span>Resources</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="theme-toggle-container">
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Dark Mode</span>
+        <input type="checkbox" id="theme-toggle" role="switch" checked>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="app-content">
+
+      <!-- TAB 1: Make a Design -->
+      <section id="make-design" class="tab-panel active">
+        <header>
+          <h2>Make a Design</h2>
+          <p>Configure your factors and select an experimental design template.</p>
+        </header>
+
+        <article class="card">
+          <div class="grid">
+            <div>
+              <label for="design-type">Design Type</label>
+              <select id="design-type">
+                <option value="Plackett-Burman">Plackett-Burman (Screening)</option>
+                <option value="Full Factorial" selected>Full Factorial (Factorial)</option>
+                <option value="Fractional Factorial">Fractional Factorial (Factorial)</option>
+                <option value="Box-Behnken">Box-Behnken (Response Surface)</option>
+                <option value="Central Composite">Central Composite (Response Surface)</option>
+                <option value="Latin Hypercube Sampling">Latin Hypercube Sampling (Space Filling)</option>
+                <option value="D-Optimal">D-Optimal (Custom/Algorithmic)</option>
+              </select>
+            </div>
+
+            <div id="dynamic-runs-container" style="display: none;">
+              <label for="design-runs" id="runs-label">Number of Runs</label>
+              <select id="design-runs"></select>
+            </div>
+
+            <div id="dynamic-blocks-container" style="display: none;">
+              <label for="design-blocks">Number of Blocks</label>
+              <select id="design-blocks">
+                <option value="1">1 (No Blocking)</option>
+              </select>
+            </div>
+
+            <div id="ccd-type-container" style="display: none;">
+              <label for="ccd-type">CCD Variant</label>
+              <select id="ccd-type">
+                <option value="Circumscribed">Circumscribed</option>
+                <option value="Inscribed">Inscribed</option>
+                <option value="Face-Centred">Face-Centred</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <input type="checkbox" id="randomize-design" checked>
+            <label for="randomize-design" style="display: inline-block; margin-left: 0.5rem;">Randomise run order</label>
+          </div>
+        </article>
+
+        <article class="card">
+          <h3>Factors Definition</h3>
+          <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 1.5rem;">
+            Define the inputs of your experiment. Level values must be separated by commas (e.g. <code>10, 20</code> or <code>Low, Med, High</code>). Factor names must start with a letter and contain only alphanumeric characters or underscores.
+          </p>
+
+          <table class="factors-table">
+            <thead>
+              <tr>
+                <th style="width: 30%">Factor Name</th>
+                <th style="width: 25%">Factor Type</th>
+                <th style="width: 35%">Levels / Range Limits</th>
+                <th style="width: 10%; text-align: center;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="factors-tbody">
+              <!-- Default Factor Rows -->
+              <tr data-factor-idx="0">
+                <td><input type="text" class="factor-name" value="Temperature" placeholder="e.g. Temp" required></td>
+                <td>
+                  <select class="factor-type">
+                    <option value="Continuous" selected>Continuous</option>
+                    <option value="Discrete">Discrete</option>
+                    <option value="Categorical">Categorical</option>
+                  </select>
+                </td>
+                <td><input type="text" class="factor-levels" value="150, 200" placeholder="Min, Max limit" required></td>
+                <td style="text-align: center;">
+                  <button class="btn-icon btn-danger-outline remove-factor-btn" type="button" title="Remove factor">×</button>
+                </td>
+              </tr>
+              <tr data-factor-idx="1">
+                <td><input type="text" class="factor-name" value="Pressure" placeholder="e.g. Press" required></td>
+                <td>
+                  <select class="factor-type">
+                    <option value="Continuous" selected>Continuous</option>
+                    <option value="Discrete">Discrete</option>
+                    <option value="Categorical">Categorical</option>
+                  </select>
+                </td>
+                <td><input type="text" class="factor-levels" value="10, 30" placeholder="Min, Max limit" required></td>
+                <td style="text-align: center;">
+                  <button class="btn-icon btn-danger-outline remove-factor-btn" type="button" title="Remove factor">×</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <button id="add-factor-btn" class="outline" style="flex: 1;">+ Add Factor</button>
+            <button id="generate-design-btn" style="flex: 2;">Generate Experimental Design</button>
+          </div>
+        </article>
+      </section>
+
+      <!-- TAB 2: Enter/Edit Results -->
+      <section id="enter-results" class="tab-panel">
+        <header>
+          <h2>Enter/Edit Results</h2>
+          <p>Record your measured experimental outcomes directly into the design spreadsheet matrix.</p>
+        </header>
+
+        <article class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; gap: 0.75rem;">
+              <button id="load-csv-btn" class="outline secondary">Load Design</button>
+              <input type="file" id="csv-file-input" style="display: none;" accept=".csv">
+              <button id="save-csv-btn" class="outline secondary">Save/Export CSV</button>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+              <button id="add-col-btn" class="outline">+ Add Column</button>
+              <button id="remove-col-btn" class="outline btn-danger-outline">- Remove Column</button>
+            </div>
+          </div>
+
+          <div id="hot-container" class="handsontable-container"></div>
+
+          <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+            💡 <strong>Tip:</strong> Right-click on any row in the spreadsheet to insert new rows, delete rows, or copy cell data. Keep response columns named cleanly (e.g. <code>Response</code>, <code>Yield</code>).
+          </p>
+        </article>
+      </section>
+
+      <!-- TAB 3: Analyze the Design -->
+      <section id="analyze-design" class="tab-panel">
+        <header>
+          <h2>Analyze the Design</h2>
+          <p>Fit regression models to your results and evaluate variance (ANOVA).</p>
+        </header>
+
+        <article class="card">
+          <div class="grid">
+            <div>
+              <label for="analyze-response-col">Response Column</label>
+              <select id="analyze-response-col">
+                <option value="">-- No Design Generated --</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="model-preset">Model Preset</label>
+              <select id="model-preset">
+                <option value="Main Effects" selected>Main Effects Only</option>
+                <option value="Main Effects + Interactions">Main Effects + 2-Way Interactions</option>
+                <option value="Response Surface">Response Surface (Quadratic)</option>
+                <option value="Custom">Custom Formula</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <label for="model-formula">Regression Formula</label>
+            <input type="text" id="model-formula" placeholder="e.g. Yield ~ Temp + Press + Temp:Press" required>
+            <small class="text-muted">Standard Patsy/R format: <code>Response ~ X1 + X2 + X1:X2 + I(X1**2)</code></small>
+          </div>
+
+          <button id="run-analysis-btn" style="margin-top: 1.5rem; width: 100%;">Run Statistical Analysis</button>
+        </article>
+
+        <!-- Analysis Results Layout -->
+        <div id="analysis-results-section" style="display: none;">
+
+          <div class="grid">
+            <div class="prediction-hero" style="margin-bottom: 2rem;">
+              <div>Model Fit Quality (R²)</div>
+              <div class="prediction-val" id="val-r2">0.00</div>
+              <div class="text-muted" style="font-size: 0.9rem;">Adjusted R²: <span id="val-adj-r2">0.00</span></div>
+            </div>
+
+            <article class="card" style="padding: 1rem;">
+              <h4 style="margin-top:0.5rem; margin-bottom: 0.5rem; text-align: center;">Parity Plot (Observed vs. Predicted)</h4>
+              <div id="parity-plot" style="height: 250px; width: 100%;"></div>
+            </article>
+          </div>
+
+          <article class="card">
+            <h3>Analysis of Variance (ANOVA)</h3>
+            <div style="overflow-x: auto;">
+              <table id="anova-table" style="font-size: 0.9rem;">
+                <thead>
+                  <tr>
+                    <th>Term</th>
+                    <th>Df</th>
+                    <th>Sum Sq</th>
+                    <th>Mean Sq</th>
+                    <th>F-Value</th>
+                    <th>p-Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Filled via JS -->
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>Model Parameter Estimates</h3>
+            <div style="overflow-x: auto;">
+              <table id="estimates-table" style="font-size: 0.9rem;">
+                <thead>
+                  <tr>
+                    <th>Term</th>
+                    <th>Clean Term</th>
+                    <th>Estimate (Coef)</th>
+                    <th>Std. Error</th>
+                    <th>t-Value</th>
+                    <th>p-Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Filled via JS -->
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- TAB 4: Model Explorer -->
+      <section id="model-explorer" class="tab-panel">
+        <header>
+          <h2>Model Explorer & Optimizer</h2>
+          <p>Interactively navigate your design space, predict responses, and locate optimal operating points.</p>
+        </header>
+
+        <div id="explorer-warning" class="prediction-hero" style="background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.25);">
+          <h3>No Analysis Fitted Yet</h3>
+          <p style="margin:0;">You must generate a design, fill response data, and run the regression analysis first to unlock the model explorer.</p>
+        </div>
+
+        <div id="explorer-content" style="display: none;">
+          <div class="grid" style="grid-template-columns: 1fr 1.5fr; gap: 2rem;">
+
+            <!-- Sliders Column -->
+            <div>
+              <article class="card" style="height: 100%;">
+                <h3>Factors Navigator</h3>
+                <p class="text-muted" style="font-size: 0.85rem;">Drag the sliders to see real-time predictions at specific coordinates.</p>
+
+                <div id="sliders-container" class="sliders-grid" style="grid-template-columns: 1fr;">
+                  <!-- Dynamic Sliders -->
+                </div>
+
+                <div class="prediction-hero" style="margin-top: 2rem;">
+                  <div>Predicted Response</div>
+                  <div class="prediction-val" id="explorer-pred-val">0.00</div>
+                </div>
+              </article>
+            </div>
+
+            <!-- Charts & Optimization Column -->
+            <div>
+              <article class="card">
+                <h3>Response Profiles</h3>
+                <p class="text-muted" style="font-size: 0.85rem;">2D Sensitivity slices along each factor relative to current navigator coordinates.</p>
+                <div id="sensitivity-plot" style="height: 350px; width: 100%;"></div>
+              </article>
+
+              <article class="card">
+                <h3>Mathematical Optimizer</h3>
+                <p class="text-muted" style="font-size: 0.85rem;">Find the mathematically optimal settings using Nelder-Mead / L-BFGS-B gradient search.</p>
+
+                <div class="grid">
+                  <div>
+                    <label for="opt-type">Goal</label>
+                    <select id="opt-type">
+                      <option value="Maximize">Maximize Response</option>
+                      <option value="Minimize">Minimize Response</option>
+                      <option value="Find Target">Target Specific Value</option>
+                    </select>
+                  </div>
+                  <div id="opt-target-container" style="display: none;">
+                    <label for="opt-target">Target Value</label>
+                    <input type="number" id="opt-target" value="50" step="any">
+                  </div>
+                </div>
+
+                <button id="run-optimizer-btn" style="width: 100%; margin-top: 1rem;">Solve Optimization</button>
+
+                <div id="optimizer-results-badge" style="display: none; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                  <h5>Optimization Solution</h5>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Predicted Response: <strong id="opt-resolved-pred" style="color: var(--success-color);">-</strong></span>
+                  </div>
+                  <div id="opt-resolved-factors" class="opt-factors-list">
+                    <!-- Badges -->
+                  </div>
+                </div>
+              </article>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: Resources & References -->
+      <section id="resources" class="tab-panel">
+        <header>
+          <h2>Resources & References</h2>
+          <p>Overview of DoE methodologies and background literature references.</p>
+        </header>
+
+        <article class="card">
+          <h3>Design Types Summary</h3>
+          <dl>
+            <dt><strong>Plackett-Burman Designs</strong></dt>
+            <dd>Highly efficient screening designs utilizing cyclic permutations. Ideal for identifying a few significant factors from a large set of candidates (4–23 factors) in a minimal number of runs.</dd>
+
+            <dt><strong>Factorial Designs (Full / Fractional)</strong></dt>
+            <dd>Investigate factor interactions systematically. Full factorials run all level combinations. Fractional factorials use resolution structures (III, IV, V) to significantly reduce run count while resolving primary effects.</dd>
+
+            <dt><strong>Response Surface Designs (Box-Behnken / CCD)</strong></dt>
+            <dd>Use 3 or more levels to model curvature. Box-Behnken is highly efficient for 3-level factors. Central Composite (CCD) augments factorial points with axial/center points to enable quadratic estimation.</dd>
+
+            <dt><strong>Space-Filling Designs (Latin Hypercube)</strong></dt>
+            <dd>Maximize coverage and spread runs uniformly. Crucial when factors have complex, non-linear boundaries, or when validating machine learning models.</dd>
+
+            <dt><strong>D-Optimal Custom Designs</strong></dt>
+            <dd>Algorithmic designs constructed by coordinates exchange (Fedorov's algorithm). Custom-tailored to minimize parameter variance for a user-specified regression formula.</dd>
+          </dl>
+        </article>
+
+        <article class="card">
+          <h3>References & Bibliography</h3>
+          <ul style="font-size: 0.95rem; line-height: 1.6;">
+            <li>Box, G. E., Hunter, J. S., & Hunter, W. G. (2005). <em>Statistics for Experimenters: Design, Innovation, and Discovery</em>. Wiley.</li>
+            <li>Myers, R. H., Montgomery, D. C., & Anderson-Cook, C. M. (2016). <em>Response Surface Methodology: Process and Product Optimization Using Designed Experiments</em>. Wiley.</li>
+            <li>Goos, P., & Jones, B. (2011). <em>Optimal Design of Experiments: A Case Study Approach</em>. Wiley.</li>
+          </ul>
+        </article>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Global Loading Indicator -->
+  <div id="global-spinner" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Toast Messages Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Application JS Code -->
+  <script src="/static/app.js"></script>
+</body>
+</html>

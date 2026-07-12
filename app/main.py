@@ -1,9 +1,12 @@
+import os
 import re
 from typing import Any
 
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from app.engine.design_generators import (
@@ -20,6 +23,11 @@ from app.engine.optimizer import optimize_model
 from app.engine.stats_engine import fit_regression_model, update_factor_names
 
 app = FastAPI(title="DoEIY - Design of Experiments API")
+
+# Mount static files
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+os.makedirs(static_dir, exist_ok=True)
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
 # --- Schemas ---
@@ -116,8 +124,20 @@ def evaluate_term(term: str, factors: dict[str, Any]) -> float:
 
 # --- Endpoints ---
 @app.get("/")
-def read_root() -> dict[str, str]:
-    return {"message": "Hello from DoEIY FastAPI rewrite!"}
+def read_root() -> FileResponse:
+    return FileResponse(os.path.join(os.path.dirname(__file__), "static", "index.html"))
+
+
+@app.get("/api/version")
+def api_version() -> dict[str, str]:
+    for path in ["version.txt", os.path.join(os.path.dirname(__file__), "..", "version.txt")]:
+        if os.path.exists(path):
+            try:
+                with open(path) as f:
+                    return {"version": f.read().strip()}
+            except Exception:
+                pass
+    return {"version": "1.0.2"}
 
 
 @app.post("/api/design/generate")
