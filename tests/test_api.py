@@ -13,7 +13,15 @@ def test_read_root() -> None:
 
 
 def test_api_version() -> None:
+    import os
     response = client.get("/api/version")
     assert response.status_code == 200
     assert "version" in response.json()
-    assert response.json()["version"] == "1.0.2"
+    
+    expected_version = "1.0.2"
+    version_file_path = os.path.join(os.path.dirname(__file__), "..", "version.txt")
+    if os.path.exists(version_file_path):
+        with open(version_file_path) as f:
+            expected_version = f.read().strip()
+            
+    assert response.json()["version"] == expected_version
