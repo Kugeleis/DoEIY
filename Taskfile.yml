@@ -103,15 +103,38 @@ tasks:
 
   b-dev:
     desc: Bump pre-release development number (e.g., 1.0.3.dev0 -> 1.0.3.dev1)
+    deps: [validate-prerelease]
     cmds:
       - uv run bump-my-version bump pre_n
 
   b-rc:
     desc: Transition to release candidate phase (e.g., 1.0.3.dev1 -> 1.0.3.rc0)
+    deps: [validate-prerelease]
     cmds:
-      - uv run bump-my-version bump pre_l --value rc
+      - uv run bump-my-version bump pre_l
 
   b-release:
     desc: Release stable version (e.g., 1.0.3.rc0 -> 1.0.3)
+    deps: [validate-main-branch, validate-prerelease]
     cmds:
-      - uv run bump-my-version bump pre_l --value final
+      - uv run bump-my-version bump pre_l
+
+  validate-main-branch:
+    internal: true
+    cmds:
+      - |
+        BRANCH=$(git branch --show-current)
+        if [ "$BRANCH" != "main" ] && [ "$BRANCH" != "master" ]; then
+          echo "Error: Version bumps are only allowed on the 'main' or 'master' branch. Current branch is '$BRANCH'." >&2
+          exit 1
+        fi
+
+  validate-prerelease:
+    internal: true
+    cmds:
+      - |
+        VERSION=$(uv run bump-my-version show current_version)
+        if ! echo "$VERSION" | grep -Eq '\.(dev|rc)[0-9]+$'; then
+          echo "Error: Current version $VERSION is stable. Start a pre-release cycle first using b-p, b-m, or b-M." >&2
+          exit 1
+        fi
