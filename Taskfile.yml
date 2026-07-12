@@ -87,16 +87,31 @@ tasks:
     - task: test
 
   b-M:
-    desc: Bump Major version, commit, and tag (e.g., 1.0.2 -> 2.0.0)
+    desc: Start next Major development cycle (e.g., 1.0.2 -> 2.0.0.dev0)
     cmds:
-    - uv run bump-my-version bump major
+      - uv run bump-my-version bump major
 
   b-m:
-    desc: Bump minor version, commit, and tag (e.g., 1.0.2 -> 1.1.0)
+    desc: Start next minor development cycle (e.g., 1.0.2 -> 1.1.0.dev0)
     cmds:
-    - uv run bump-my-version bump minor
+      - uv run bump-my-version bump minor
 
   b-p:
-    desc: Bump patch version, commit, and tag (e.g., 1.0.2 -> 1.0.3)
+    desc: Start next patch development cycle (e.g., 1.0.2 -> 1.0.3.dev0)
     cmds:
-    - uv run bump-my-version bump patch
+      - uv run bump-my-version bump patch
+
+  b-dev:
+    desc: Bump pre-release development number (e.g., 1.0.3.dev0 -> 1.0.3.dev1)
+    cmds:
+      - uv run bump-my-version bump pre_n
+
+  b-rc:
+    desc: Transition to release candidate phase (e.g., 1.0.3.dev1 -> 1.0.3.rc0)
+    cmds:
+      - uv run bump-my-version bump pre_l --value rc
+
+  b-release:
+    desc: Release stable version (e.g., 1.0.3.rc0 -> 1.0.3)
+    cmds:
+      - uv run bump-my-version bump pre_l --value final
