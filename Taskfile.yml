@@ -6,10 +6,15 @@ tasks:
     cmds:
     - uv sync
 
-  lint:
-    desc: Run ruff linter check
+  dev:
+    desc: Start the FastAPI dev server locally with auto-reload
     cmds:
-    - uv run ruff check app/ tests/
+    - uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 3839
+
+  lint:
+    desc: Run ruff linter check with autofix
+    cmds:
+    - uv run ruff check --fix app/ tests/
 
   format:
     desc: Run ruff formatter check
