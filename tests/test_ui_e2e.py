@@ -14,6 +14,7 @@ playwright_available = False
 if os.environ.get("CI") != "true":
     try:
         from playwright.sync_api import sync_playwright
+
         with sync_playwright() as p:
             _browser = p.chromium.launch()
             _browser.close()
@@ -40,7 +41,7 @@ def server() -> Generator[None]:
 
 @pytest.mark.skipif(
     not playwright_available,
-    reason="Playwright E2E tests are skipped because browser binaries are not installed or we are in CI."
+    reason="Playwright E2E tests are skipped because browser binaries are not installed or we are in CI.",
 )
 def test_ui_workflow(page: Page) -> None:
     # 1. Load the web interface
